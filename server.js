@@ -1,9 +1,6 @@
-let handleRequest = function(req, res)
-{
-    res.writeHead(200);
-    res.end("Hello World");
-}
+var express = require('express');
+var app = express();
 
-const http = require('http');
-let server = http.createServer(handleRequest);
-server.listen(8080);
+var server = app.listen(8080);
+
+app.use(express.static('/public'));
