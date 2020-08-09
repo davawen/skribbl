@@ -18,6 +18,8 @@
   "homepage": "https://github.com/davawen/skribbl#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "node": "^14.7.0"
+    "node": "^14.7.0",
+    "p5": "^1.1.9",
+    "socket.io": "^2.3.0"
   }
 }
