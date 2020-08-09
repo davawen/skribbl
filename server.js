@@ -1,14 +1,9 @@
-const express = require('express');
-const app = express();
-
-let handle = function(req, res)
+let handleRequest = function(req, res)
 {
-    res.writeHead
+    res.writeHead(200);
+    res.end("Hello World");
 }
 
 const http = require('http');
-var server = http.createServer(handle);
-
-app.use(express.static('public'));
-
-console.log("Cool");
+let server = http.createServer(handleRequest);
+server.listen(8080);
