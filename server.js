@@ -44,35 +44,48 @@ function handleRequest(req, res) {
 
 let io = require('socket.io').listen(server);
 
-let usernames = {};
+let users = {};
+let drawing = [];
 
 io.sockets.on('connection',
     function(socket)
     {
         console.log("Connection: " + socket.id);
         
-        socket.username = "";
-        
         socket.on('disconnect',
             function()
             {
                 console.log(socket.id + " disconnected");
+                delete users[socket.id];
+                
+                sendGlobalData();
             }
         );
+        
+        socket.emit('load', users);
+        
+        function sendGlobalData()
+        {
+            io.emit('load', {userData: users, drawingData: drawing});
+        }
+        
+        socket.on('sendName', 
+            function(data)
+            {
+                users[socket.id] = {name: data};
+                
+                
+                console.log(users);
+                sendGlobalData();
+            }
+        )
         
         socket.on('mouse',
             function(data)
             {
-                //console.log("Received: 'mouse' " + data.x + " " + data.y);
+                drawing[drawing.length] = data;
                 socket.broadcast.emit('mouse', data);
             }
         );
-        
-        socket.on('sendname', 
-            function(data)
-            {
-                socket.username = data;
-            }
-        )
     }
 );
