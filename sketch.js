@@ -1,6 +1,7 @@
 let socket;
 let data;
 let m = [];
+let usernames = {};
 
 function setup()
 {
@@ -8,12 +9,9 @@ function setup()
 	
 	socket = io.connect();
 	
-	
-	
 	socket.on('mouse',
 		function(data)
 		{
-			console.log("Got: " + data.x + " " + data.y);
 			m[m.length] = data;
 		}
 	);
@@ -31,12 +29,22 @@ function mouseDragged()
 	socket.emit('mouse',data);
 }
 
+function keyPressed()
+{
+	if(keyCode == 82)
+	{
+		m.length = 0;
+	}
+}
+
 function draw()
 {
 	background(0);
 	
+	
 	noStroke();
 	fill(255);
+	
 	for(i = 0; i < m.length; i++)
 	{
 		circle(m[i].x, m[i].y, 10);

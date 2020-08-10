@@ -44,10 +44,14 @@ function handleRequest(req, res) {
 
 let io = require('socket.io').listen(server);
 
+let usernames = {};
+
 io.sockets.on('connection',
     function(socket)
     {
         console.log("Connection: " + socket.id);
+        
+        socket.username = "";
         
         socket.on('disconnect',
             function()
@@ -63,5 +67,12 @@ io.sockets.on('connection',
                 socket.broadcast.emit('mouse', data);
             }
         );
+        
+        socket.on('sendname', 
+            function(data)
+            {
+                socket.username = data;
+            }
+        )
     }
 );
