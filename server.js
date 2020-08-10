@@ -8,30 +8,6 @@ const path = require('path');
 var server = http.createServer(handleRequest);
 server.listen(port);
 
-let io = require('socket.io').listen(server);
-
-io.sockets.on('connection',
-    function(socket)
-    {
-        console.log("Connection: " + socket.id);
-        
-        socket.on('disconnect',
-            function()
-            {
-                console.log(socket.id + " disconnected");
-            }
-        );
-        
-        socket.on('mouse',
-            function(data)
-            {
-                console.log("Received: 'mouse' " + data.x + " " + data.y);
-                socket.broadcast.emit('mouse', data);
-            }
-        );
-    }
-);
-
 console.log('Server started on port ' + port);
 
 function handleRequest(req, res) {
@@ -65,3 +41,27 @@ function handleRequest(req, res) {
         }
     );
 }
+
+let io = require('socket.io').listen(server);
+
+io.sockets.on('connection',
+    function(socket)
+    {
+        console.log("Connection: " + socket.id);
+        
+        socket.on('disconnect',
+            function()
+            {
+                console.log(socket.id + " disconnected");
+            }
+        );
+        
+        socket.on('mouse',
+            function(data)
+            {
+                //console.log("Received: 'mouse' " + data.x + " " + data.y);
+                socket.broadcast.emit('mouse', data);
+            }
+        );
+    }
+);
