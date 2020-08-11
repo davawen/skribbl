@@ -84,6 +84,15 @@ io.sockets.on('connection',
             }
         )
         
+        socket.on('sendMessage',
+            function(data)
+            {
+                var sender = users[socket.id].name;
+                
+                io.emit('sendMessage', {'name': sender, 'msg': data});
+            }
+        )
+        
         socket.on('mouse',
             function(data)
             {
