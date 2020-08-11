@@ -58,15 +58,19 @@ io.sockets.on('connection',
                 console.log(socket.id + " disconnected");
                 delete users[socket.id];
                 
-                sendGlobalData();
+                sendGlobalData('users');
             }
         );
         
-        socket.emit('load', users);
-        
-        function sendGlobalData()
+        function sendGlobalData(type)
         {
-            io.emit('load', {userData: users, drawingData: drawing});
+            var data;
+            if(type == 'users')
+                data = users;
+            else if(type == 'drawing')
+                data = drawing;
+            
+            io.emit('load', {'type': type, 'data': data});
         }
         
         socket.on('sendName', 
@@ -74,9 +78,9 @@ io.sockets.on('connection',
             {
                 users[socket.id] = {name: data};
                 
-                
-                console.log(users);
-                sendGlobalData();
+                //console.log(users);
+                sendGlobalData('users');
+                sendGlobalData('drawing');
             }
         )
         
@@ -87,5 +91,13 @@ io.sockets.on('connection',
                 socket.broadcast.emit('mouse', data);
             }
         );
+        
+        /*socket.on('undo',
+            function(data)
+            {
+                delete drawing[data];
+                sendGlobalData("drawing");
+            }
+        )*/
     }
 );

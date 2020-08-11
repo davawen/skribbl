@@ -2,12 +2,14 @@ let socket;
 let active;
 
 let drawing = [];
+let lastMove = 0;
+
 let message = [];
 
 let users = {};
 
 let input, button;
-let chat, chatButton;
+let chat;
 
 let avatar;
 
@@ -26,16 +28,16 @@ function setup()
 	createCanvas(1600, 700);
 	
 	input = createInput('username');
-	input.position(5, 5);
-	input.width = 60;
+	input.position(10, 10);
+	input.size(120);
 	
-	button = createButton('Envoyer');
-	button.position(65+button.width+10, 5);
+	button = createButton('Actualiser');
+	button.position(160, 10);
 	button.mousePressed(send);
 	
 	chat = createInput();
-	chat.position(1180, 700);
-	chat.width = 100;
+	chat.position(1180, 710);
+	chat.size(370);
 	
 	socket = io.connect();
 	
@@ -44,20 +46,29 @@ function setup()
 	socket.on('mouse',
 		function(data)
 		{
-			m[m.length] = data;
+			drawing[drawing.length] = data;
 		}
 	);
 	
 	socket.on('load', 
 		function(data)
 		{
-			users = data.userData;
-			drawing = data.drawingData;
+			console.log(data);
+			
+			if(data.type == 'users')
+				users = data.data;
+			else if(data.type == 'drawing')
+				drawing = data.data;
+		}
+	);
+	
+	socket.on('sendMessage', 
+		function(data)
+		{
+			message[message.length] = data;
 		}
 	);
 }
-
-
 
 function mouseDragged()
 {
@@ -67,6 +78,7 @@ function mouseDragged()
 			x: {a: pmouseX, b: mouseX},
 			y: {a: pmouseY, b: mouseY}
 		};
+		lastMove = drawing.length;
 		drawing[drawing.length] = data;
 		// Send that object to the socket
 		socket.emit('mouse',data);
@@ -75,9 +87,12 @@ function mouseDragged()
 
 function keyPressed()
 {
-	if(keyCode == 82)
+	if(keyCode == ENTER)
 	{
-		m.length = 0;
+		var msg = chat.value();
+		if(msg == "") return;
+		
+		socket.emit('sendMessage', msg);
 	}
 }
 
@@ -91,7 +106,7 @@ function draw()
 	textAlign(CENTER, CENTER);
 	for(var user in users)
 	{
-		fill(index % 2 == 0 ? 255 : 200);
+		fill(255);
 		rect(0, 55*index, 226, 55)
 		
 		image(avatar, 226-60, 55*index);
@@ -112,7 +127,7 @@ function draw()
 	
 	strokeWeight(10);
 	stroke(0);
-	for(i = 0; i < m.length; i++)
+	for(i = 0; i < drawing.length; i++)
 	{
 		var m = drawing[i];
 		line(m.x.a, m.y.a, m.x.b, m.y.b);
