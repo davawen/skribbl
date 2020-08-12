@@ -1,4 +1,6 @@
 let socket;
+let socketId;
+
 let active;
 
 let drawing = [];
@@ -12,6 +14,8 @@ let input, button;
 let chat;
 
 let avatar, unispace;
+
+let timer;
 
 function preload()
 {
@@ -40,6 +44,7 @@ function setup()
 	chat.position(1180, 710);
 	chat.size(370);
 	
+	//timer = 30;
 	
 	//#region Networking
 	
@@ -58,11 +63,20 @@ function setup()
 		function(data)
 		{
 			//console.log(data);
+			socketId = socket.id;
 			
-			if(data.type == 'users')
-				users = data.data;
-			else if(data.type == 'drawing')
-				drawing = data.data;
+			switch(data.type)
+			{
+				case 'users':
+					users = data.data;
+					break;
+				case 'drawing':
+					drawing = data.data;
+					break;
+				case 'timer':
+					timer = data.data;
+					break;
+			}
 		}
 	);
 	
@@ -78,12 +92,17 @@ function setup()
 
 function draw()
 {
+	timer -= 1/30;
+	
 	noStroke();
 	fill(255);
 	rect(236, 0, 922, 692); //Sketch
 	rect(1170, 0, 385, 690); //Chat
 	
-	textSize(16);
+	fill(0);
+	text(timer, 290, 20);
+	
+	textSize(12);
 	textFont(unispace);
 	
 	var index = 0;

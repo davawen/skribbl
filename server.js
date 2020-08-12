@@ -42,36 +42,47 @@ function handleRequest(req, res) {
     );
 }
 
-let io = require('socket.io').listen(server);
+var array = fs.readFileSync('public/liste_francais.txt', 'utf-8').split("\r\n");
 
 let users = {};
 let drawing = [];
+
+let timer = 40;
+
+timer -= 1/30;
+console.log(timer);
+if(timer <= 0)
+{
+    timer = 40;
+}
+
+const io = require('socket.io').listen(server);
 
 io.sockets.on('connection',
     function(socket)
     {
         console.log("Connection: " + socket.id);
         
-        socket.on('disconnect',
-            function()
-            {
-                console.log(socket.id + " disconnected");
-                delete users[socket.id];
-                
-                sendGlobalData('users');
-            }
-        );
-        
         function sendGlobalData(type)
         {
             var data;
-            if(type == 'users')
-                data = users;
-            else if(type == 'drawing')
-                data = drawing;
+            switch(type)
+            {
+                case 'users':
+                    data = users;
+                    break;
+                case 'drawing':
+                    data = drawing;
+                    break;
+                case 'timer':
+                    data = timer;
+            }
             
             io.emit('load', {'type': type, 'data': data});
         }
+        
+        
+        //#region socket.on
         
         socket.on('sendName', 
             function(data)
@@ -81,6 +92,7 @@ io.sockets.on('connection',
                 //console.log(users);
                 sendGlobalData('users');
                 sendGlobalData('drawing');
+                sendGlobalData('timer');
             }
         )
         
@@ -101,6 +113,16 @@ io.sockets.on('connection',
             }
         );
         
+        socket.on('disconnect',
+            function()
+            {
+                console.log(socket.id + " disconnected");
+                delete users[socket.id];
+                
+                sendGlobalData('users');
+            }
+        );
+        
         /*socket.on('undo',
             function(data)
             {
@@ -108,5 +130,7 @@ io.sockets.on('connection',
                 sendGlobalData("drawing");
             }
         )*/
+        
+        //#endregion
     }
 );
