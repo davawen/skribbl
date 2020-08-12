@@ -47,39 +47,44 @@ var array = fs.readFileSync('public/liste_francais.txt', 'utf-8').split("\r\n");
 let users = {};
 let drawing = [];
 
-let timer = 40;
-
-timer -= 1/30;
-console.log(timer);
-if(timer <= 0)
-{
-    timer = 40;
-}
+let timer = 80;
 
 const io = require('socket.io').listen(server);
+
+function sendGlobalData(type)
+{
+    var data;
+    switch(type)
+    {
+        case 'users':
+            data = users;
+            break;
+        case 'drawing':
+            data = drawing;
+            break;
+        case 'timer':
+            data = timer;
+    }
+    
+    io.emit('load', {'type': type, 'data': data});
+}
+
+var countDown = setInterval(
+    function()
+    {
+        timer--;
+        sendGlobalData('timer');
+        if(timer <= 0)
+        {
+            timer = 80;
+        }
+    }
+, 1000);
 
 io.sockets.on('connection',
     function(socket)
     {
         console.log("Connection: " + socket.id);
-        
-        function sendGlobalData(type)
-        {
-            var data;
-            switch(type)
-            {
-                case 'users':
-                    data = users;
-                    break;
-                case 'drawing':
-                    data = drawing;
-                    break;
-                case 'timer':
-                    data = timer;
-            }
-            
-            io.emit('load', {'type': type, 'data': data});
-        }
         
         
         //#region socket.on

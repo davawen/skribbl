@@ -13,14 +13,14 @@ let users = {};
 let input, button;
 let chat;
 
-let avatar, unispace;
+let avatar, clock;
 
 let timer;
 
 function preload()
 {
 	avatar = loadImage('public/avatar.png');
-	unispace = loadFont('public/unispace.ttf');
+	clock = loadImage('public/clock.png');
 }
 
 function send()
@@ -30,7 +30,7 @@ function send()
 
 function setup()
 {
-	createCanvas(1600, 700);
+	createCanvas(1600, 800);
 	
 	input = createInput('username');
 	input.position(10, 10);
@@ -41,10 +41,8 @@ function setup()
 	button.mousePressed(send);
 	
 	chat = createInput();
-	chat.position(1180, 710);
+	chat.position(1180, 780);
 	chat.size(370);
-	
-	//timer = 30;
 	
 	//#region Networking
 	
@@ -83,7 +81,7 @@ function setup()
 	socket.on('sendMessage', 
 		function(data)
 		{
-			message[message.length] = data.name + ": " + data.msg;
+			message[message.length] = {'name': data.name, 'msg': ": "+data.msg};
 		}
 	);
 	
@@ -92,38 +90,55 @@ function setup()
 
 function draw()
 {
-	timer -= 1/30;
+	background(36, 81, 149);
 	
 	noStroke();
 	fill(255);
-	rect(236, 0, 922, 692); //Sketch
-	rect(1170, 0, 385, 690); //Chat
+	rect(0, 0, 1550, 60);
 	
-	fill(0);
-	text(timer, 290, 20);
+	imageMode(CENTER);
+	image(clock, 36, 30);
 	
-	textSize(12);
-	textFont(unispace);
+	fill(20);
+	textAlign(CENTER, CENTER);
+	textSize(24);
+	text(timer, 37, 34);
+	
+	fill(255);
+	rect(236, 70, 920, 692); //Sketch
+	rect(1170, 70, 385, 690); //Chat
+	
+	textSize(16);
 	
 	var index = 0;
-	textAlign(CENTER, CENTER);
+	imageMode(CORNER);
 	for(var user in users)
 	{
 		fill(255);
-		rect(0, 55*index, 226, 55)
+		rect(0, 70 + 55*index, 226, 55)
 		
-		image(avatar, 226-60, 55*index);
+		image(avatar, 226-60, 70 + 55*index);
 		
 		fill(0);
-		text(users[user].name, 113, 55/2 + index*55);
+		text(users[user].name, 113, 70 + 55/2 + index*55);
 		index++;
 	}
 	
+	textSize(14);
 	textAlign(LEFT, TOP);
 	for(var i = 0; i < message.length; i++)
 	{
-		text(message[i], 1180, 10 + i*20);
+		var str = message[i].name;
+		
+		textStyle(BOLD);
+		text(str, 1180, 80 + i*20);
+		
+		var width = textWidth(str);
+		
+		textStyle(NORMAL);
+		text(message[i].msg, 1180 + width, 80 + i*20);
 	}
+	
 	
 	strokeWeight(10);
 	stroke(0);
@@ -132,11 +147,21 @@ function draw()
 		var m = drawing[i];
 		line(m.x.a, m.y.a, m.x.b, m.y.b);
 	}
+	
+	if(inCanvas())
+	{
+		line(pmouseX, pmouseY, mouseX, mouseY);
+	}
+}
+
+function inCanvas()
+{
+	return mouseX > 236 && mouseX < 1160 && mouseY > 70 && mouseY < 690;
 }
 
 function mouseDragged()
 {
-	if(mouseX > 236)
+	if(inCanvas())
 	{
 		let data = {
 			x: {a: pmouseX, b: mouseX},
