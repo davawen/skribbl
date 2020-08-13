@@ -83,7 +83,7 @@ var countDown = setInterval(
         sendGlobalData('timer');
         if(timer <= 0)
         {
-            drawing.length = 0;
+            //drawing.length = 0;
             
             timer = 20;
             
