@@ -122,7 +122,7 @@ function setup()
 	socket.on('foundWord',
 		function(data)
 		{
-			message[message.length] = data + " a trouvé le mot!";
+			message[message.length] = {'name': data, 'msg': " a trouvé le mot!"};
 		}
 	);
 	
@@ -261,18 +261,19 @@ function keyPressed()
 			message[message.length] = {'name': users[socketId].name, 'msg': ": "+msg};
 			socket.emit('sendMessage', msg);
 		}
-		else
+		else if(!active)
 		{
 			var similarity = stringSimilarity.compareTwoStrings(msg, word);
+			console.log(similarity);
 			
 			if(similarity > .95)
 			{
-				socket.emit('foundWord', similarity);
-				message[message.length] = users[socketId].name + " a trouvé le mot!";
+				socket.emit('foundWord');
+				message[message.length] = {'name': users[socketId].name, 'msg': " a trouvé le mot!"};
 			}
 			else if(similarity > .8)
 			{
-				message[message.length] = msg + " est proche.";
+				message[message.length] = {'name': "", 'msg': msg + " est proche."};
 			}
 		}
 		

@@ -117,8 +117,6 @@ io.sockets.on('connection',
         console.log("Connection: " + socket.id);
         numUsers++;
         
-        console.log(active);
-        
         //#region socket.on
         
         socket.on('sendName', 
@@ -145,7 +143,7 @@ io.sockets.on('connection',
         )
         
         socket.on('foundWord',
-            function(data)
+            function()
             {
                 socket.broadcast.emit('foundWord', users[socket.id].name);
             }
