@@ -201,7 +201,17 @@ function keyPressed()
 		var msg = chat.value();
 		if(msg == "") return;
 		
-		socket.emit('sendMessage', msg);
+		if(!msg.startsWith)
+		{
+			message[message.length] = {'name': users[socketId], 'msg': ": "+msg};
+			socket.emit('sendMessage', msg);
+		}
+		else
+		{
+			msg = msg.substring(1);
+			socket.emit('sendGuess', msg);
+		}
+		
 		chat.value("");
 	}
 }

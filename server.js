@@ -124,7 +124,7 @@ io.sockets.on('connection',
             {
                 var sender = users[socket.id].name;
                 
-                io.emit('sendMessage', {'name': sender, 'msg': data});
+                socket.broadcast.emit('sendMessage', {'name': sender, 'msg': data});
             }
         )
         

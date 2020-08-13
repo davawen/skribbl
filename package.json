@@ -4,7 +4,7 @@
   "engines": {
     "node": "12.18.3"
   },
-  "description": "",
+  "description": "Reproduction du jeu skribbl.io pour jouer entre amis.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/davawen/skribbl#readme",
   "dependencies": {
     "node": "^14.7.0",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "string-similarity": "^4.0.2"
   }
 }
