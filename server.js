@@ -89,8 +89,6 @@ var countDown = setInterval(
             
             
             active++;
-            
-            console.log(active >= numUsers);
             if(active >= numUsers) active = 0;
             
             sendGlobalData('active');

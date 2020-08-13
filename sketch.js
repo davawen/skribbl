@@ -1,7 +1,6 @@
 let socket;
 let socketId;
 
-
 let drawing = [];
 let active = {me: false, index: 0};
 let lastMove = 0;
@@ -157,7 +156,7 @@ function draw()
 		var width = textWidth(str);
 		
 		textStyle(NORMAL);
-		text(message[i].msg, 1180 + width, 80 + i*20);
+		text(message[i].msg, 1180 + width, 80 + i*20, 1555);
 	}
 	
 	
@@ -177,7 +176,7 @@ function draw()
 
 function inCanvas()
 {
-	return mouseX > 236 && mouseX < 1160 && mouseY > 70 && mouseY < 760;
+	return min(pmouseX, mouseX) > 240 && max(pmouseX, mouseX) < 1155 && min(pmouseY, mouseY) > 75 && max(pmouseY, mouseY) < 755;
 }
 
 function mouseDragged()
