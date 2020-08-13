@@ -1,9 +1,9 @@
 let socket;
 let socketId;
 
-let active;
 
 let drawing = [];
+let active = {me: false, index: 0};
 let lastMove = 0;
 
 let message = [];
@@ -68,6 +68,19 @@ function setup()
 				case 'users':
 					users = data.data;
 					break;
+				case 'active':
+					active.index = data.data;
+					var index = 0;
+					for(var id in users)
+					{
+						if(id == socketId)
+						{
+							active.me = data.data == index;
+							break;
+						}
+						index++;
+					}
+					break;
 				case 'drawing':
 					drawing = data.data;
 					break;
@@ -102,7 +115,7 @@ function draw()
 	fill(20);
 	textAlign(CENTER, CENTER);
 	textSize(24);
-	text(timer, 37, 34);
+	text(timer || 0, 37, 34);
 	
 	fill(255);
 	rect(236, 70, 920, 692); //Sketch
@@ -119,10 +132,18 @@ function draw()
 		
 		image(avatar, 226-60, 70 + 55*index);
 		
+		var str = "";
+		if(user == socketId){ str = "#";}
+		str += users[user].name;
+		
 		fill(0);
-		text(users[user].name, 113, 70 + 55/2 + index*55);
+		text(str, 113, 70 + 55/2 + index*55);
+		
+		
 		index++;
 	}
+	var _y = active.index*55 + 70;
+	triangle(10, _y + 55/5, 10, _y + 55/5*4, 40, _y + 55/2);
 	
 	textSize(14);
 	textAlign(LEFT, TOP);
@@ -156,12 +177,12 @@ function draw()
 
 function inCanvas()
 {
-	return mouseX > 236 && mouseX < 1160 && mouseY > 70 && mouseY < 690;
+	return mouseX > 236 && mouseX < 1160 && mouseY > 70 && mouseY < 760;
 }
 
 function mouseDragged()
 {
-	if(inCanvas())
+	if(inCanvas() && active.me)
 	{
 		let data = {
 			x: {a: pmouseX, b: mouseX},

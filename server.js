@@ -3,6 +3,7 @@ const port = process.env.PORT || 8080;
 
 const fs = require('fs');
 const path = require('path');
+const { formatWithOptions } = require('util');
 
 
 var server = http.createServer(handleRequest);
@@ -42,12 +43,15 @@ function handleRequest(req, res) {
     );
 }
 
-var array = fs.readFileSync('public/liste_francais.txt', 'utf-8').split("\r\n");
+var words = fs.readFileSync('public/words.txt', 'utf-8').split("\r\n");
 
 let users = {};
+let numUsers = 0;
+let active = 0;
+
 let drawing = [];
 
-let timer = 80;
+let timer = 20;
 
 const io = require('socket.io').listen(server);
 
@@ -58,6 +62,9 @@ function sendGlobalData(type)
     {
         case 'users':
             data = users;
+            break;
+        case 'active':
+            data = active;
             break;
         case 'drawing':
             data = drawing;
@@ -76,7 +83,18 @@ var countDown = setInterval(
         sendGlobalData('timer');
         if(timer <= 0)
         {
-            timer = 80;
+            drawing.length = 0;
+            
+            timer = 20;
+            
+            
+            active++;
+            
+            console.log(active >= numUsers);
+            if(active >= numUsers) active = 0;
+            
+            sendGlobalData('active');
+            sendGlobalData('drawing');
         }
     }
 , 1000);
@@ -85,6 +103,7 @@ io.sockets.on('connection',
     function(socket)
     {
         console.log("Connection: " + socket.id);
+        numUsers++;
         
         
         //#region socket.on
@@ -98,6 +117,7 @@ io.sockets.on('connection',
                 sendGlobalData('users');
                 sendGlobalData('drawing');
                 sendGlobalData('timer');
+                sendGlobalData('active');
             }
         )
         
@@ -122,7 +142,18 @@ io.sockets.on('connection',
             function()
             {
                 console.log(socket.id + " disconnected");
+                
                 delete users[socket.id];
+                numUsers--;
+                
+                if(active >= numUsers)
+                {
+                    active = Math.max(active-1, 0);
+                    timer = 20;
+                    
+                    sendGlobalData('active');
+                    sendGlobalData('timer');
+                }
                 
                 sendGlobalData('users');
             }
