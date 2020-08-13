@@ -44,6 +44,7 @@ function handleRequest(req, res) {
 }
 
 var words = fs.readFileSync('public/words.txt', 'utf-8').split("\r\n");
+var word = words[Math.floor(Math.random()*words.length)];
 
 let users = {};
 let numUsers = 0;
@@ -51,7 +52,7 @@ let active = 0;
 
 let drawing = [];
 
-let timer = 20;
+let timer = 80;
 
 const io = require('socket.io').listen(server);
 
@@ -71,6 +72,10 @@ function sendGlobalData(type)
             break;
         case 'timer':
             data = timer;
+            break;
+        case 'word':
+            data = word;
+            break;
     }
     
     io.emit('load', {'type': type, 'data': data});
@@ -79,20 +84,29 @@ function sendGlobalData(type)
 var countDown = setInterval(
     function()
     {
-        timer--;
-        sendGlobalData('timer');
-        if(timer <= 0)
+        if(numUsers > 1)
         {
-            //drawing.length = 0;
-            
-            timer = 20;
-            
-            
-            active++;
-            if(active >= numUsers) active = 0;
-            
-            sendGlobalData('active');
-            sendGlobalData('drawing');
+            timer--;
+            sendGlobalData('timer');
+            if(timer <= 0)
+            {
+                drawing.length = 0;
+                timer = 80;            
+                
+                word = words[Math.floor(Math.random()*words.length)];
+                
+                active++;
+                if(active >= numUsers) active = 0;
+                
+                sendGlobalData('active');
+                sendGlobalData('drawing');
+                sendGlobalData('timer');
+                sendGlobalData('word');
+            }
+        }
+        else
+        {
+            timer = 80;
         }
     }
 , 1000);
@@ -103,6 +117,7 @@ io.sockets.on('connection',
         console.log("Connection: " + socket.id);
         numUsers++;
         
+        console.log(active);
         
         //#region socket.on
         
@@ -116,6 +131,7 @@ io.sockets.on('connection',
                 sendGlobalData('drawing');
                 sendGlobalData('timer');
                 sendGlobalData('active');
+                sendGlobalData('word');
             }
         )
         
@@ -127,6 +143,13 @@ io.sockets.on('connection',
                 socket.broadcast.emit('sendMessage', {'name': sender, 'msg': data});
             }
         )
+        
+        socket.on('foundWord',
+            function(data)
+            {
+                socket.broadcast.emit('foundWord', users[socket.id].name);
+            }
+        );
         
         socket.on('mouse',
             function(data)
@@ -147,7 +170,7 @@ io.sockets.on('connection',
                 if(active >= numUsers)
                 {
                     active = Math.max(active-1, 0);
-                    timer = 20;
+                    timer = 80;
                     
                     sendGlobalData('active');
                     sendGlobalData('timer');
@@ -157,13 +180,13 @@ io.sockets.on('connection',
             }
         );
         
-        /*socket.on('undo',
+        socket.on('undo',
             function(data)
             {
-                delete drawing[data];
-                sendGlobalData("drawing");
+                drawing.splice(data, 1);
+                socket.broadcast.emit('undo', data);
             }
-        )*/
+        )
         
         //#endregion
     }

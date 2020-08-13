@@ -21,7 +21,6 @@
   "homepage": "https://github.com/davawen/skribbl#readme",
   "dependencies": {
     "node": "^14.7.0",
-    "socket.io": "^2.3.0",
-    "string-similarity": "^4.0.2"
+    "socket.io": "^2.3.0"
   }
 }

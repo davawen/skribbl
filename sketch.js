@@ -2,8 +2,10 @@ let socket;
 let socketId;
 
 let drawing = [];
-let active = {me: false, index: 0};
-let lastMove = 0;
+let active = false;
+let lastMove = [];
+
+let word;
 
 let message = [];
 
@@ -27,6 +29,22 @@ function send()
 	socket.emit('sendName', input.value());
 }
 
+function limitChatSize()
+{
+	if(textWidth(users[socketId].name + ": " + chat.value()) > 370)
+	{
+		chat.value(chat.value().substring(0, chat.value().length-1));
+	}
+}
+
+function limitNameSize()
+{
+	if(input.value().length > 12)
+	{
+		input.value(input.value().substring(0, 12));
+	}
+}
+
 function setup()
 {
 	createCanvas(1600, 800);
@@ -34,6 +52,7 @@ function setup()
 	input = createInput('username');
 	input.position(10, 10);
 	input.size(120);
+	input.input(limitNameSize);
 	
 	button = createButton('Actualiser');
 	button.position(160, 10);
@@ -42,6 +61,7 @@ function setup()
 	chat = createInput();
 	chat.position(1180, 780);
 	chat.size(370);
+	chat.input(limitChatSize);
 	
 	//#region Networking
 	
@@ -68,13 +88,12 @@ function setup()
 					users = data.data;
 					break;
 				case 'active':
-					active.index = data.data;
 					var index = 0;
 					for(var id in users)
 					{
 						if(id == socketId)
 						{
-							active.me = data.data == index;
+							active = data.data == index;
 							break;
 						}
 						index++;
@@ -86,6 +105,9 @@ function setup()
 				case 'timer':
 					timer = data.data;
 					break;
+				case 'word':
+					word = data.data;
+					break;
 			}
 		}
 	);
@@ -94,6 +116,20 @@ function setup()
 		function(data)
 		{
 			message[message.length] = {'name': data.name, 'msg': ": "+data.msg};
+		}
+	);
+	
+	socket.on('foundWord',
+		function(data)
+		{
+			message[message.length] = data + " a trouvé le mot!";
+		}
+	);
+	
+	socket.on('undo',
+		function(data)
+		{
+			drawing.splice(data, 1);
 		}
 	);
 	
@@ -115,6 +151,21 @@ function draw()
 	textAlign(CENTER, CENTER);
 	textSize(24);
 	text(timer || 0, 37, 34);
+	
+	if(word != undefined)
+	{
+		if(active)
+		{
+			text(word, 800, 34);
+		}
+		else
+		{
+			for(i = 0; i < word.length; i++)
+			{
+				text("_", 800 + i*20, 34);
+			}
+		}
+	}
 	
 	fill(255);
 	rect(236, 70, 920, 692); //Sketch
@@ -138,11 +189,10 @@ function draw()
 		fill(0);
 		text(str, 113, 70 + 55/2 + index*55);
 		
-		
 		index++;
 	}
-	var _y = active.index*55 + 70;
-	triangle(10, _y + 55/5, 10, _y + 55/5*4, 40, _y + 55/2);
+	/*var _y = active.index*55 + 70;
+	triangle(10, _y + 55/5, 10, _y + 55/5*4, 40, _y + 55/2);*/
 	
 	textSize(14);
 	textAlign(LEFT, TOP);
@@ -156,9 +206,8 @@ function draw()
 		var width = textWidth(str);
 		
 		textStyle(NORMAL);
-		text(message[i].msg, 1180 + width, 80 + i*20, 1555);
+		text(message[i].msg, 1180 + width, 80 + i*20);
 	}
-	
 	
 	strokeWeight(10);
 	stroke(0);
@@ -181,13 +230,17 @@ function inCanvas()
 
 function mouseDragged()
 {
-	if(inCanvas() && active.me)
+	if(inCanvas() && active)
 	{
 		let data = {
 			x: {a: pmouseX, b: mouseX},
 			y: {a: pmouseY, b: mouseY}
 		};
-		lastMove = drawing.length;
+		
+		if(lastMove.length < 50)
+			lastMove[lastMove.length] = drawing.length;
+		
+		
 		drawing[drawing.length] = data;
 		// Send that object to the socket
 		socket.emit('mouse',data);
@@ -201,17 +254,36 @@ function keyPressed()
 		var msg = chat.value();
 		if(msg == "") return;
 		
-		if(!msg.startsWith)
+		if(msg.startsWith('*'))
 		{
-			message[message.length] = {'name': users[socketId], 'msg': ": "+msg};
+			msg = msg.substring(1);
+			
+			message[message.length] = {'name': users[socketId].name, 'msg': ": "+msg};
 			socket.emit('sendMessage', msg);
 		}
 		else
 		{
-			msg = msg.substring(1);
-			socket.emit('sendGuess', msg);
+			var similarity = stringSimilarity.compareTwoStrings(msg, word);
+			
+			if(similarity > .95)
+			{
+				socket.emit('foundWord', similarity);
+				message[message.length] = users[socketId].name + " a trouvé le mot!";
+			}
+			else if(similarity > .8)
+			{
+				message[message.length] = msg + " est proche.";
+			}
 		}
 		
 		chat.value("");
+	}
+	
+	if(keyCode == 82 && lastMove.length > 0)
+	{
+		socket.emit('undo', lastMove[lastMove.length-1]);
+		drawing.splice(lastMove[lastMove.length-1], 1);
+		
+		lastMove.pop();
 	}
 }
