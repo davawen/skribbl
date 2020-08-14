@@ -51,7 +51,9 @@ var word = words[Math.floor(Math.random()*words.length)];
 
 let users = {};
 let numUsers = 0;
+
 let active = 0;
+let found = 0;
 
 let drawing = [];
 
@@ -97,6 +99,8 @@ var countDown = setInterval(
                 timer = 80;            
                 
                 word = words[Math.floor(Math.random()*words.length)];
+                
+                found = 0;
                 
                 active++;
                 if(active >= numUsers) active = 0;
@@ -149,6 +153,9 @@ io.sockets.on('connection',
             function()
             {
                 socket.broadcast.emit('foundWord', users[socket.id].name);
+                found++;
+                
+                if(found >= numUsers-1) timer = 0;
             }
         );
         
