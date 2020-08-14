@@ -43,7 +43,8 @@ function handleRequest(req, res) {
     );
 }
 
-var words = fs.readFileSync('public/words.txt', 'utf-8').split("\r\n");
+var words = fs.readFileSync('public/words.txt', 'utf-8').split("\n");
+
 var word = words[Math.floor(Math.random()*words.length)];
 
 let users = {};
