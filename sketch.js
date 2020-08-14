@@ -160,7 +160,7 @@ function draw()
 		}
 		else
 		{
-			for(i = 0; i < word.length; i++)
+			for(i = 0; i < word.length-1; i++)
 			{
 				text("_", 800 + i*20, 34);
 			}
