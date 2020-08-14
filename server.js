@@ -101,10 +101,15 @@ var countDown = setInterval(
                 word = words[Math.floor(Math.random()*words.length)];
                 
                 found = 0;
+                for(id in users)
+                {
+                    users[id].found = false;
+                }
                 
                 active++;
                 if(active >= numUsers) active = 0;
                 
+                sendGlobalData('users');
                 sendGlobalData('active');
                 sendGlobalData('drawing');
                 sendGlobalData('timer');
@@ -129,7 +134,7 @@ io.sockets.on('connection',
         socket.on('sendName', 
             function(data)
             {
-                users[socket.id] = {name: data};
+                users[socket.id] = {name: data, found: false};
                 
                 //console.log(users);
                 sendGlobalData('users');
@@ -152,7 +157,8 @@ io.sockets.on('connection',
         socket.on('foundWord',
             function()
             {
-                socket.broadcast.emit('foundWord', users[socket.id].name);
+                socket.broadcast.emit('foundWord', socket.id);
+                users[socket.id].found = true;
                 found++;
                 
                 if(found >= numUsers-1) timer = 0;

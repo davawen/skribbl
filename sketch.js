@@ -122,7 +122,8 @@ function setup()
 	socket.on('foundWord',
 		function(data)
 		{
-			message[message.length] = {'name': data, 'msg': " a trouvé le mot!"};
+			message[message.length] = {'name': users[data].name, 'msg': " a trouvé le mot!"};
+			users[data].found = true;
 		}
 	);
 	
@@ -177,7 +178,9 @@ function draw()
 	imageMode(CORNER);
 	for(var user in users)
 	{
-		fill(255);
+		var factor = index % 2 == 0 ? 0 : 30;
+		
+		fill(users[user].found ? color(151-factor, 216-factor, 127-factor): color(255-factor));
 		rect(0, 70 + 55*index, 226, 55)
 		
 		image(avatar, 226-60, 70 + 55*index);
@@ -270,6 +273,7 @@ function keyPressed()
 			{
 				socket.emit('foundWord');
 				message[message.length] = {'name': users[socketId].name, 'msg': " a trouvé le mot!"};
+				users[socketId].found = true;
 			}
 			else if(similarity > .8)
 			{
