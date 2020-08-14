@@ -17,9 +17,11 @@ function handleRequest(req, res) {
     if (pathname == '/') {
     pathname = '/index.html';
     }
-
+    
     var ext = path.extname(pathname);
-
+    
+    pathname = pathname;
+    
     // Map extension to file type
     var typeExt = {
     '.html': 'text/html',

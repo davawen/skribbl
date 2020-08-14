@@ -107,7 +107,6 @@ function setup()
 					break;
 				case 'word':
 					word = data.data;
-					console.log(word);
 					break;
 			}
 		}
