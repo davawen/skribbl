@@ -20,8 +20,8 @@ let timer;
 
 function preload()
 {
-	avatar = loadImage('public/avatar.png');
-	clock = loadImage('public/clock.png');
+	avatar = loadImage('avatar.png');
+	clock = loadImage('clock.png');
 }
 
 function send()
@@ -161,7 +161,7 @@ function draw()
 		}
 		else
 		{
-			for(i = 0; i < word.length-1; i++)
+			for(i = 0; i < word.length; i++)
 			{
 				text("_", 800 + i*20, 34);
 			}

@@ -13,14 +13,14 @@ console.log('Server started on port ' + port);
 
 function handleRequest(req, res) {
     var pathname = req.url;
-
+    
     if (pathname == '/') {
-    pathname = '/index.html';
+        pathname = '/index.html';
     }
     
     var ext = path.extname(pathname);
     
-    pathname = pathname;
+    pathname = '/public' + pathname;
     
     // Map extension to file type
     var typeExt = {
