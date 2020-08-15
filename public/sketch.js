@@ -171,9 +171,12 @@ function draw()
 		}
 		else
 		{
+			var w = textWidth("_")+3;
 			for(i = 0; i < word.length; i++)
 			{
-				text("_", 800 + i*20, 34);
+				var str = word.charAt(i) == " " ? " " : "_";
+				
+				text(str, 800 + i*w, 34);
 			}
 		}
 	}

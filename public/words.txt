@@ -6,13 +6,10 @@ homme
 femme
 amour
 voiture
-temps
 bien
-fois
 rue
 monde
 tête
-raison
 coeur
 dieu
 jour
