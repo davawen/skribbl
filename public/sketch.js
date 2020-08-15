@@ -8,7 +8,7 @@ let lastMove = [];
 let size = 10;
 
 let currentColor = 0;
-let hue = 127;
+let hue = 126;
 let value = 22;
 
 let word;
@@ -64,8 +64,14 @@ function inCanvas()
 
 function colorButton(x, y, w, h, id)
 {
+	push();
+	
+	noStroke();
+	
 	fill(idToC(id));
 	rect(x, y, w, h);
+	
+	pop()
 	
 	if(mouseIsPressed)
 	{
@@ -75,8 +81,6 @@ function colorButton(x, y, w, h, id)
 		}
 	}
 }
-
-//#endregion
 
 function idToC(id)
 {
@@ -140,6 +144,34 @@ function idToC(id)
 	}
 	return c;
 }
+
+function sizeButton(x, y, w, h, s)
+{
+	push()
+	
+	fill(255);
+	rect(x, y, w, h);
+	
+	noFill();
+	stroke(0);
+	strokeWeight(2);
+	
+	circle(x+w/2, y+h/2, s);
+	
+	if(mouseIsPressed)
+	{
+		if(mouseX >= x && mouseX <= x+w && mouseY >= y && mouseY <= y+h)
+		{
+			size = s;
+		}
+	}
+	
+	pop();
+}
+
+//#endregion
+
+
 
 function setup()
 {
@@ -312,10 +344,18 @@ function draw()
 		line(m.x.a, m.y.a, m.x.b, m.y.b);
 	}
 	
-	stroke(currentColor);
+	
+	noFill();
 	if(inCanvas())
 	{
+		strokeWeight(size);
+		stroke(currentColor);
+		
 		line(pmouseX, pmouseY, mouseX, mouseY);
+		
+		strokeWeight(1);
+		stroke(0);
+		circle(mouseX, mouseY, size+1);
 	}
 	//#region Color change
 	
@@ -349,6 +389,11 @@ function draw()
 	fill(255);
 	rect(560 + hue + 2, 770, 4, 54);
 	rect(780, 770 + value + 2, 60, 4);
+	
+	for(i = 0; i < 5; i++)
+	{
+		sizeButton(850 + i*60, 770, 54, 54, 5*(i+1));
+	}
 	
 	//#endregion
 }

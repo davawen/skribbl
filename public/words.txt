@@ -6,7 +6,6 @@ homme
 femme
 amour
 voiture
-bien
 rue
 monde
 tête
