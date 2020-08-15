@@ -126,7 +126,7 @@ var countDown = setInterval(
 io.sockets.on('connection',
     function(socket)
     {
-        console.log("Connection: " + socket.id);
+        //console.log("Connection: " + socket.id);
         numUsers++;
         
         //#region socket.on
@@ -176,7 +176,7 @@ io.sockets.on('connection',
         socket.on('disconnect',
             function()
             {
-                console.log(socket.id + " disconnected");
+                //console.log(socket.id + " disconnected");
                 
                 delete users[socket.id];
                 numUsers--;

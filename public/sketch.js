@@ -50,16 +50,16 @@ function setup()
 	createCanvas(1600, 800);
 	
 	input = createInput('username');
-	input.position(10, 10);
+	input.position(90, 70);
 	input.size(120);
 	input.input(limitNameSize);
 	
 	button = createButton('Actualiser');
-	button.position(160, 10);
+	button.position(220, 70);
 	button.mousePressed(send);
 	
 	chat = createInput();
-	chat.position(1180, 780);
+	chat.position(1180, 785);
 	chat.size(370);
 	chat.input(limitChatSize);
 	
