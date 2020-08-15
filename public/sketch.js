@@ -9,7 +9,7 @@ let size = 10;
 
 let currentColor = 0;
 let hue = 127;
-let value = 54;
+let value = 22;
 
 let word;
 
@@ -335,13 +335,20 @@ function draw()
 	colorMode(HSB, 255);
 	for(i = 0; i < 200; i++)
 	{
-		fill(floor(i/7)*7 * 1.275, 255, value);
+		fill(floor(i/8)*8 * 1.275, 255, value*4.72);
 		rect(560 + i, 770, 1, 54);
 	}
+	for(i = 0; i < 54; i++)
+	{
+		fill(0, 0, floor(i/8)*8 * 4.72);
+		rect(780, 770 + i, 60, 1);
+	}
+	
 	colorMode(RGB, 255);
 	
 	fill(255);
-	rect(560 + hue, 770, 7, 54);
+	rect(560 + hue + 2, 770, 4, 54);
+	rect(780, 770 + value + 2, 60, 4);
 	
 	//#endregion
 }
@@ -350,7 +357,7 @@ function mouseDragged()
 {
 	if(mouseX >= 560 && mouseX <= 760 && mouseY >= 770 && mouseY <= 824)
 	{
-		hue = floor((mouseX-560)/7)*7;
+		hue = floor((mouseX-560)/8)*8;
 		
 		colorMode(HSB, 255);
 		currentColor = color(hue*1.275, 255, value*4.72);
@@ -358,7 +365,7 @@ function mouseDragged()
 	}
 	else if(mouseX >= 780 && mouseX <= 860 && mouseY >= 770 && mouseY <= 824)
 	{
-		value = floor((mouseY-770)/7)*7;
+		value = floor((mouseY-770)/8)*8;
 		
 		colorMode(HSB, 255);
 		currentColor = color(hue*1.275, 255, value*4.72);
