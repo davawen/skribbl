@@ -1,5 +1,6 @@
 const http = require('http');
 const port = process.env.PORT || 8080;
+const heroku = process.env.PORT ? true : false;
 
 const fs = require('fs');
 const path = require('path');
@@ -90,7 +91,7 @@ function sendGlobalData(type)
 var countDown = setInterval(
     function()
     {
-        if(numUsers > 1)
+        if(numUsers - heroku > 1)
         {
             timer--;
             sendGlobalData('timer');
@@ -108,7 +109,7 @@ var countDown = setInterval(
                 }
                 
                 active++;
-                if(active >= numUsers) active = 0;
+                if(active >= numUsers - heroku) active = 0;
                 
                 sendGlobalData('users');
                 sendGlobalData('active');
