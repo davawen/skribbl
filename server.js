@@ -163,7 +163,7 @@ io.sockets.on('connection',
                 users[socket.id].found = true;
                 found++;
                 
-                if(found >= numUsers-1) timer = 0;
+                if(found >= numUsers-1 - heroku) timer = 0;
             }
         );
         
