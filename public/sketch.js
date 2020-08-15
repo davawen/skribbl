@@ -59,11 +59,6 @@ function setup()
 	button.position(220, 70);
 	button.mousePressed(send);
 	
-	herere = function()
-	{
-		//DesTrucs
-	}
-	
 	chat = createInput();
 	chat.position(1180, 785);
 	chat.size(370);
