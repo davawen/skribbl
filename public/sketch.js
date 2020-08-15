@@ -17,6 +17,7 @@ let chat;
 let avatar, clock;
 
 let timer;
+let herere;
 
 function preload()
 {
@@ -57,6 +58,11 @@ function setup()
 	button = createButton('Actualiser');
 	button.position(220, 70);
 	button.mousePressed(send);
+	
+	herere = function()
+	{
+		//DesTrucs
+	}
 	
 	chat = createInput();
 	chat.position(1180, 785);
