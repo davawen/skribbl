@@ -2,6 +2,7 @@ let socket;
 let socketId;
 
 let drawing = [];
+let bg = '#FFFFFF';
 let active = false;
 let lastMove = [];
 
@@ -20,7 +21,7 @@ let users = {};
 let input, button;
 let chat;
 
-let avatar, clock;
+let avatar, clock, montserrat, montserratBold, pattern;
 
 let timer;
 let herere;
@@ -31,6 +32,9 @@ function preload()
 {
 	avatar = loadImage('avatar.png');
 	clock = loadImage('clock.png');
+	pattern = loadImage('pattern.png');
+	montserrat = loadFont('Montserrat.ttf');
+	montserratBold = loadFont('Montserrat-Bold.ttf');
 }
 
 function send()
@@ -68,7 +72,7 @@ function colorButton(x, y, w, h, id)
 	
 	noStroke();
 	
-	fill(idToC(id));
+	fill(idToColor(id));
 	rect(x, y, w, h);
 	
 	pop()
@@ -77,12 +81,12 @@ function colorButton(x, y, w, h, id)
 	{
 		if(mouseX >= x && mouseX <= x+w && mouseY >= y && mouseY <= y+h)
 		{
-			currentColor = idToC(id);
+			currentColor = idToColor(id);
 		}
 	}
 }
 
-function idToC(id)
+function idToColor(id)
 {
 	var c;
 	switch(id)
@@ -145,6 +149,11 @@ function idToC(id)
 	return c;
 }
 
+function colorToRGB(col)
+{
+	return 'rgb(' + red(col) + ', ' + green(col) + ', ' + blue(col) + ')';
+}
+
 function sizeButton(x, y, w, h, s)
 {
 	push()
@@ -178,17 +187,18 @@ function setup()
 	createCanvas(1600, 900);
 	
 	input = createInput('username');
-	input.position(90, 70);
+	input.position(90, 30);
 	input.size(120);
 	input.input(limitNameSize);
 	
 	button = createButton('Actualiser');
-	button.position(220, 70);
+	button.position(220, 30);
 	button.mousePressed(send);
+	button.style('background-color', '#808080');
 	
 	chat = createInput();
-	chat.position(1180, 785);
-	chat.size(370);
+	chat.position(1180, 743);
+	chat.size(375);
 	chat.input(limitChatSize);
 	
 	//#region Networking
@@ -201,6 +211,13 @@ function setup()
 		function(data)
 		{
 			drawing[drawing.length] = data;
+		}
+	);
+	
+	socket.on('bg',
+		function(data)
+		{
+			bg = data;
 		}
 	);
 	
@@ -228,7 +245,8 @@ function setup()
 					}
 					break;
 				case 'drawing':
-					drawing = data.data;
+					drawing = data.data.drawing;
+					bg = data.data.bg;
 					break;
 				case 'timer':
 					timer = data.data;
@@ -261,6 +279,19 @@ function draw()
 {
 	background(36, 81, 149);
 	
+	var w = 1600 / pattern.width;
+	var h = 900 / pattern.height;
+	
+	//console.log(w + " " + h);
+	
+	for(i = 0; i < w; i++)
+	{
+		for(j = 0; j < h; j++)
+		{
+			image(pattern, pattern.width*i, pattern.height*j);
+		}
+	}
+	
 	noStroke();
 	fill(255);
 	rect(0, 0, 1550, 60);
@@ -269,15 +300,16 @@ function draw()
 	image(clock, 36, 30);
 	
 	fill(20);
+	textFont(montserrat);
 	textAlign(CENTER, CENTER);
 	textSize(24);
-	text(timer || 0, 37, 34);
+	text(timer || 0, 37, 30);
 	
 	if(word != undefined)
 	{
 		if(active)
 		{
-			text(word, 800, 34);
+			text(word, 800, 30);
 		}
 		else
 		{
@@ -286,13 +318,15 @@ function draw()
 			{
 				var str = word.charAt(i) == " " ? " " : "_";
 				
-				text(str, 800 + i*w, 34);
+				text(str, 800 + i*w, 30);
 			}
 		}
 	}
 	
-	fill(255);
+	fill(bg);
 	rect(240, 70, 920, 690); //Sketch
+	
+	fill(255);
 	rect(1170, 70, 385, 690); //Chat
 	
 	textSize(16);
@@ -326,12 +360,12 @@ function draw()
 	{
 		var str = message[i].name;
 		
-		textStyle(BOLD);
+		textFont(montserratBold);
 		text(str, 1180, 80 + i*20);
 		
 		var width = textWidth(str);
 		
-		textStyle(NORMAL);
+		textFont(montserrat);
 		text(message[i].msg, 1180 + width, 80 + i*20);
 	}
 	
@@ -381,19 +415,36 @@ function draw()
 	for(i = 0; i < 54; i++)
 	{
 		fill(0, 0, floor(i/8)*8 * 4.72);
-		rect(780, 770 + i, 60, 1);
+		rect(770, 770 + i, 60, 1);
 	}
 	
 	colorMode(RGB, 255);
 	
 	fill(255);
 	rect(560 + hue + 2, 770, 4, 54);
-	rect(780, 770 + value + 2, 60, 4);
+	rect(770, 770 + value + 2, 60, 4);
 	
 	for(i = 0; i < 5; i++)
 	{
 		sizeButton(850 + i*60, 770, 54, 54, 5*(i+1));
 	}
+	
+	//Clear
+	
+	fill(255);
+	stroke(0);
+	strokeWeight(3);
+	if(active && mouseX >= 1160 && mouseX <= 1214 && mouseY >= 770 && mouseY <= 824)
+	{
+		stroke(25);
+		fill(200);
+		if(mouseIsPressed)
+			socket.emit('clear');
+	}
+	
+	rect(1160, 770, 54, 54, 15);
+	line(1170, 780, 1204, 814);
+	line(1170, 814, 1204, 780);
 	
 	//#endregion
 }
@@ -420,7 +471,7 @@ function mouseDragged()
 	{
 		let data = {
 			s: size,
-			c: currentColor,
+			c: colorToRGB(currentColor),
 			x: {a: pmouseX, b: mouseX},
 			y: {a: pmouseY, b: mouseY}
 		};
@@ -469,5 +520,10 @@ function keyPressed()
 		}
 		
 		chat.value("");
+	}
+	else if(keyCode == 66 && active)
+	{
+		bg = currentColor;
+		socket.emit('bg', colorToRGB(bg));
 	}
 }

@@ -56,6 +56,7 @@ let active = 0;
 let found = 0;
 
 let drawing = [];
+let bg = '#FFFFFF';
 
 let timer = 80;
 
@@ -73,7 +74,7 @@ function sendGlobalData(type)
             data = active;
             break;
         case 'drawing':
-            data = drawing;
+            data = {'drawing': drawing, 'bg': bg};
             break;
         case 'timer':
             data = timer;
@@ -170,6 +171,22 @@ io.sockets.on('connection',
             {
                 drawing[drawing.length] = data;
                 socket.broadcast.emit('mouse', data);
+            }
+        );
+    
+        socket.on('bg',
+            function(data)
+            {
+                socket.broadcast.emit('bg', data);
+                bg = data;
+            }
+        );
+        
+        socket.on('clear',
+            function()
+            {
+                drawing.length = 0;
+                sendGlobalData('drawing');
             }
         );
         
