@@ -5,7 +5,11 @@ let drawing = [];
 let active = false;
 let lastMove = [];
 
+let size = 10;
+
 let currentColor = 0;
+let hue = 127;
+let value = 54;
 
 let word;
 
@@ -20,6 +24,8 @@ let avatar, clock;
 
 let timer;
 let herere;
+
+//#region Custom functions
 
 function preload()
 {
@@ -48,6 +54,14 @@ function limitNameSize()
 	}
 }
 
+function inCanvas()
+{
+	return min(pmouseX, mouseX) > 240 && max(pmouseX, mouseX) < 1155 && min(pmouseY, mouseY) > 75 && max(pmouseY, mouseY) < 755;
+}
+
+
+//deutéranopie
+
 function colorButton(x, y, w, h, id)
 {
 	fill(idToC(id));
@@ -57,10 +71,12 @@ function colorButton(x, y, w, h, id)
 	{
 		if(mouseX >= x && mouseX <= x+w && mouseY >= y && mouseY <= y+h)
 		{
-			currentColor = id;
+			currentColor = idToC(id);
 		}
 	}
 }
+
+//#endregion
 
 function idToC(id)
 {
@@ -96,6 +112,30 @@ function idToC(id)
 			break;
 		case 9:
 			c = color(0);
+			break;
+		case 10:
+			c = color('#4C4C4C');
+			break;
+		case 11:
+			c = color('#740B07');
+			break;
+		case 12:
+			c = color('#C23800');
+			break;
+		case 13:
+			c = color('#E8A200');
+			break;
+		case 14:
+			c = color('#005510');
+			break;
+		case 15:
+			c = color('#00569E');
+			break;
+		case 16:
+			c = color('#0E0865');
+			break;
+		case 17:
+			c = color('#550069');
 			break;
 	}
 	return c;
@@ -263,18 +303,16 @@ function draw()
 		text(message[i].msg, 1180 + width, 80 + i*20);
 	}
 	
-	strokeWeight(10);
 	for(i = 0; i < drawing.length; i++)
 	{
 		var m = drawing[i];
 		
-		stroke(idToC(m.c));
-		
-		
+		strokeWeight(m.s);
+		stroke(m.c);
 		line(m.x.a, m.y.a, m.x.b, m.y.b);
 	}
 	
-	stroke(idToC(currentColor));
+	stroke(currentColor);
 	if(inCanvas())
 	{
 		line(pmouseX, pmouseY, mouseX, mouseY);
@@ -282,29 +320,54 @@ function draw()
 	//#region Color change
 	
 	noStroke();
-	fill(idToC(currentColor));
+	fill(currentColor);
 	rect(240, 770, 54, 54)
-	
 	
 	for(i = 0; i < 9; i++)
 	{
 		colorButton(304 + 27*i, 770, 27, 27, i);
 	}
-	colorButton(304, 770+27, 27, 27, 9);
+	for(i = 9; i < 18; i++)
+	{
+		colorButton(304 + 27*(i-9), 770+27, 27, 27, i);
+	}
+	
+	colorMode(HSB, 255);
+	for(i = 0; i < 200; i++)
+	{
+		fill(floor(i/7)*7 * 1.275, 255, value);
+		rect(560 + i, 770, 1, 54);
+	}
+	colorMode(RGB, 255);
+	
+	fill(255);
+	rect(560 + hue, 770, 7, 54);
 	
 	//#endregion
 }
 
-function inCanvas()
-{
-	return min(pmouseX, mouseX) > 240 && max(pmouseX, mouseX) < 1155 && min(pmouseY, mouseY) > 75 && max(pmouseY, mouseY) < 755;
-}
-
 function mouseDragged()
 {
-	if(inCanvas() && active)
+	if(mouseX >= 560 && mouseX <= 760 && mouseY >= 770 && mouseY <= 824)
+	{
+		hue = floor((mouseX-560)/7)*7;
+		
+		colorMode(HSB, 255);
+		currentColor = color(hue*1.275, 255, value*4.72);
+		colorMode(RGB, 255);
+	}
+	else if(mouseX >= 780 && mouseX <= 860 && mouseY >= 770 && mouseY <= 824)
+	{
+		value = floor((mouseY-770)/7)*7;
+		
+		colorMode(HSB, 255);
+		currentColor = color(hue*1.275, 255, value*4.72);
+		colorMode(RGB, 255);
+	}
+	else if(inCanvas() && active)
 	{
 		let data = {
+			s: size,
 			c: currentColor,
 			x: {a: pmouseX, b: mouseX},
 			y: {a: pmouseY, b: mouseY}
@@ -318,6 +381,8 @@ function mouseDragged()
 		// Send that object to the socket
 		socket.emit('mouse',data);
 	}
+	
+	
 }
 
 function keyPressed()
