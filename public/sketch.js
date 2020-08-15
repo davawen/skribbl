@@ -50,8 +50,7 @@ function limitNameSize()
 
 function colorButton(x, y, w, h, id)
 {
-	fill(id*255);
-	
+	fill(idToC(id));
 	rect(x, y, w, h);
 	
 	if(mouseIsPressed)
@@ -61,6 +60,45 @@ function colorButton(x, y, w, h, id)
 			currentColor = id;
 		}
 	}
+}
+
+function idToC(id)
+{
+	var c;
+	switch(id)
+	{
+		case 0:
+			c = color(255);
+			break;
+		case 1:
+			c = color(191);
+			break;
+		case 2:
+			c = color('#EF130B');
+			break;
+		case 3:
+			c = color('#FF7100');
+			break;
+		case 4:
+			c = color('#FFE400');
+			break;
+		case 5:
+			c = color('#00CC00');
+			break;
+		case 6:
+			c = color('#00B2FF');
+			break;
+		case 7:
+			c = color('#231FD3');
+			break;
+		case 8:
+			c = color('#A300BA');
+			break;
+		case 9:
+			c = color(0);
+			break;
+	}
+	return c;
 }
 
 function setup()
@@ -229,11 +267,14 @@ function draw()
 	for(i = 0; i < drawing.length; i++)
 	{
 		var m = drawing[i];
-		stroke(m.c*255);
+		
+		stroke(idToC(m.c));
+		
+		
 		line(m.x.a, m.y.a, m.x.b, m.y.b);
 	}
 	
-	stroke(currentColor*255);
+	stroke(idToC(currentColor));
 	if(inCanvas())
 	{
 		line(pmouseX, pmouseY, mouseX, mouseY);
@@ -241,11 +282,15 @@ function draw()
 	//#region Color change
 	
 	noStroke();
-	fill(currentColor*255);
+	fill(idToC(currentColor));
 	rect(240, 770, 54, 54)
 	
-	colorButton(304, 770, 27, 27, 0);
-	colorButton(304, 770+27, 27, 27, 1);
+	
+	for(i = 0; i < 9; i++)
+	{
+		colorButton(304 + 27*i, 770, 27, 27, i);
+	}
+	colorButton(304, 770+27, 27, 27, 9);
 	
 	//#endregion
 }
