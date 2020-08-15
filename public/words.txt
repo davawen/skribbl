@@ -12,8 +12,6 @@ fois
 rue
 monde
 tête
-temps
-pays
 raison
 coeur
 dieu
@@ -24,9 +22,11 @@ chambre
 argent
 or
 euro
-rêve
 feu
 eau
 arbre
 table
 livre
+café
+afrique
+iron man

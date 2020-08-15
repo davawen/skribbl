@@ -5,6 +5,8 @@ let drawing = [];
 let active = false;
 let lastMove = [];
 
+let currentColor = 0;
+
 let word;
 
 let message = [];
@@ -46,9 +48,24 @@ function limitNameSize()
 	}
 }
 
+function colorButton(x, y, w, h, id)
+{
+	fill(id*255);
+	
+	rect(x, y, w, h);
+	
+	if(mouseIsPressed)
+	{
+		if(mouseX >= x && mouseX <= x+w && mouseY >= y && mouseY <= y+h)
+		{
+			currentColor = id;
+		}
+	}
+}
+
 function setup()
 {
-	createCanvas(1600, 800);
+	createCanvas(1600, 900);
 	
 	input = createInput('username');
 	input.position(90, 70);
@@ -127,14 +144,6 @@ function setup()
 			users[data].found = true;
 		}
 	);
-	
-	socket.on('undo',
-		function(data)
-		{
-			drawing.splice(data, 1);
-		}
-	);
-	
 	//#endregion Networking
 }
 
@@ -170,7 +179,7 @@ function draw()
 	}
 	
 	fill(255);
-	rect(236, 70, 920, 692); //Sketch
+	rect(240, 70, 920, 690); //Sketch
 	rect(1170, 70, 385, 690); //Chat
 	
 	textSize(16);
@@ -182,16 +191,16 @@ function draw()
 		var factor = index % 2 == 0 ? 0 : 30;
 		
 		fill(users[user].found ? color(151-factor, 216-factor, 127-factor): color(255-factor));
-		rect(0, 70 + 55*index, 226, 55)
+		rect(0, 70 + 55*index, 230, 55)
 		
-		image(avatar, 226-60, 70 + 55*index);
+		image(avatar, 230-60, 70 + 55*index);
 		
 		var str = "";
 		if(user == socketId){ str = "#";}
 		str += users[user].name;
 		
 		fill(0);
-		text(str, 113, 70 + 55/2 + index*55);
+		text(str, 115, 70 + 55/2 + index*55);
 		
 		index++;
 	}
@@ -214,17 +223,28 @@ function draw()
 	}
 	
 	strokeWeight(10);
-	stroke(0);
 	for(i = 0; i < drawing.length; i++)
 	{
 		var m = drawing[i];
+		stroke(m.c*255);
 		line(m.x.a, m.y.a, m.x.b, m.y.b);
 	}
 	
+	stroke(currentColor*255);
 	if(inCanvas())
 	{
 		line(pmouseX, pmouseY, mouseX, mouseY);
 	}
+	//#region Color change
+	
+	noStroke();
+	fill(currentColor*255);
+	rect(240, 770, 54, 54)
+	
+	colorButton(304, 770, 27, 27, 0);
+	colorButton(304, 770+27, 27, 27, 1);
+	
+	//#endregion
 }
 
 function inCanvas()
@@ -237,6 +257,7 @@ function mouseDragged()
 	if(inCanvas() && active)
 	{
 		let data = {
+			c: currentColor,
 			x: {a: pmouseX, b: mouseX},
 			y: {a: pmouseY, b: mouseY}
 		};
@@ -283,13 +304,5 @@ function keyPressed()
 		}
 		
 		chat.value("");
-	}
-	
-	if(keyCode == 82 && lastMove.length > 0)
-	{
-		socket.emit('undo', lastMove[lastMove.length-1]);
-		drawing.splice(lastMove[lastMove.length-1], 1);
-		
-		lastMove.pop();
 	}
 }

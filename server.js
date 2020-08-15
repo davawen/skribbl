@@ -193,15 +193,6 @@ io.sockets.on('connection',
                 sendGlobalData('users');
             }
         );
-        
-        socket.on('undo',
-            function(data)
-            {
-                drawing.splice(data, 1);
-                socket.broadcast.emit('undo', data);
-            }
-        )
-        
         //#endregion
     }
 );
