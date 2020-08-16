@@ -13,6 +13,7 @@ let hue = 126;
 let value = 22;
 
 let word;
+let letters = {};
 
 let message = [];
 
@@ -181,7 +182,6 @@ function sizeButton(x, y, w, h, s)
 //#endregion
 
 
-
 function setup()
 {
 	createCanvas(1600, 900);
@@ -252,7 +252,8 @@ function setup()
 					timer = data.data;
 					break;
 				case 'word':
-					word = data.data;
+					word = data.data.word;
+					letters = data.data.letters;
 					break;
 			}
 		}
@@ -271,6 +272,13 @@ function setup()
 			message[message.length] = {'name': users[data.id].name, 'msg': " a trouvé le mot!"};
 			users[data.id].found = true;
 			users[data.id].score += data.score;
+		}
+	);
+	
+	socket.on('letters',
+		function(data)
+		{
+			letters = data;
 		}
 	);
 	//#endregion Networking
@@ -317,7 +325,9 @@ function draw()
 			var w = textWidth("_")+3;
 			for(i = 0; i < word.length; i++)
 			{
-				var str = word.charAt(i) == " " ? " " : "_";
+				var str;
+				if(letters[i]) str = word.charAt(i);
+				else str = word.charAt(i) == " " ? " " : "_";
 				
 				text(str, 800 + i*w, 30);
 			}
