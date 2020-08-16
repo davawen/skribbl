@@ -117,7 +117,9 @@ var countDown = setInterval(
                 timer = 80;
                 
                 drawing.length = 0;
-                letters.length = 0; 
+                
+                delete letters;
+                letters = {}; 
                 
                 word = words[Math.floor(Math.random()*words.length)];
                 
