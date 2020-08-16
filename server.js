@@ -91,7 +91,7 @@ function sendGlobalData(type)
 var countDown = setInterval(
     function()
     {
-        if(numUsers - heroku > 1)
+        if(numUsers > 1)
         {
             timer--;
             sendGlobalData('timer');
@@ -109,7 +109,7 @@ var countDown = setInterval(
                 }
                 
                 active++;
-                if(active >= numUsers - heroku) active = 0;
+                if(active >= numUsers) active = 0;
                 
                 sendGlobalData('users');
                 sendGlobalData('active');
@@ -163,7 +163,7 @@ io.sockets.on('connection',
                 users[socket.id].found = true;
                 found++;
                 
-                if(found >= numUsers-1 - heroku) timer = 0;
+                if(found >= numUsers-1) timer = 0;
             }
         );
         
