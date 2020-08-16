@@ -253,7 +253,7 @@ function setup()
 					break;
 				case 'word':
 					word = data.data.word;
-					letters = data.data.letters;
+					//letters = data.data.letters;
 					break;
 			}
 		}
