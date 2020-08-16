@@ -81,7 +81,7 @@ function colorButton(x, y, w, h, id)
 	{
 		if(mouseX >= x && mouseX <= x+w && mouseY >= y && mouseY <= y+h)
 		{
-			currentColor = idToColor(id);
+			currentColor = colorToRGB(idToColor(id));
 		}
 	}
 }
@@ -268,8 +268,9 @@ function setup()
 	socket.on('foundWord',
 		function(data)
 		{
-			message[message.length] = {'name': users[data].name, 'msg': " a trouvé le mot!"};
-			users[data].found = true;
+			message[message.length] = {'name': users[data.id].name, 'msg': " a trouvé le mot!"};
+			users[data.id].found = true;
+			users[data.id].score += data.score;
 		}
 	);
 	//#endregion Networking
@@ -333,21 +334,25 @@ function draw()
 	
 	var index = 0;
 	imageMode(CORNER);
+	
+	textAlign(CENTER, TOP);
 	for(var user in users)
 	{
 		var factor = index % 2 == 0 ? 0 : 30;
+		var u = users[user];
 		
-		fill(users[user].found ? color(151-factor, 216-factor, 127-factor): color(255-factor));
+		fill(u.found ? color(151-factor, 216-factor, 127-factor): color(255-factor));
 		rect(0, 70 + 55*index, 230, 55)
 		
 		image(avatar, 230-60, 70 + 55*index);
 		
 		var str = "";
-		if(user == socketId){ str = "#";}
-		str += users[user].name;
+		if(user == socketId){ str = "> ";}
+		str += u.name;
 		
 		fill(0);
-		text(str, 115, 70 + 55/2 + index*55);
+		text(str, 115, 70 + 5 + index*55);
+		text(u.score, 115, 95 + index*55);
 		
 		index++;
 	}
@@ -407,15 +412,15 @@ function draw()
 	}
 	
 	colorMode(HSB, 255);
-	for(i = 0; i < 200; i++)
+	for(i = 0; i < 200; i += 8)
 	{
-		fill(floor(i/8)*8 * 1.275, 255, value*4.72);
-		rect(560 + i, 770, 1, 54);
+		fill(i*1.275, 255, value*4.72);
+		rect(560 + i, 770, 8, 54);
 	}
-	for(i = 0; i < 54; i++)
+	for(i = 0; i < 54; i += 8)
 	{
-		fill(0, 0, floor(i/8)*8 * 4.72);
-		rect(770, 770 + i, 60, 1);
+		fill(hue*1.275, 255, i*4.72);
+		rect(770, 770 + i, 60, 8);
 	}
 	
 	colorMode(RGB, 255);
@@ -471,7 +476,7 @@ function mouseDragged()
 	{
 		let data = {
 			s: size,
-			c: colorToRGB(currentColor),
+			c: currentColor,
 			x: {a: pmouseX, b: mouseX},
 			y: {a: pmouseY, b: mouseY}
 		};

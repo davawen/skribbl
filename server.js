@@ -54,7 +54,9 @@ let users = {};
 let numUsers = 0;
 
 let active = 0;
+
 let found = 0;
+let avrScore = 0;
 
 let drawing = [];
 let bg = '#FFFFFF';
@@ -102,11 +104,16 @@ var countDown = setInterval(
                 
                 word = words[Math.floor(Math.random()*words.length)];
                 
-                found = 0;
+                var index = 0;
                 for(id in users)
                 {
                     users[id].found = false;
+                    if(index == active)
+                        users[id].score += avrScore;
                 }
+                
+                found = 0;
+                avrScore = 0;
                 
                 active++;
                 if(active >= numUsers) active = 0;
@@ -136,7 +143,7 @@ io.sockets.on('connection',
         socket.on('sendName', 
             function(data)
             {
-                users[socket.id] = {name: data, found: false};
+                users[socket.id] = {name: data, found: false, score: 0};
                 
                 //console.log(users);
                 sendGlobalData('users');
@@ -159,8 +166,13 @@ io.sockets.on('connection',
         socket.on('foundWord',
             function()
             {
-                socket.broadcast.emit('foundWord', socket.id);
+                var score = Math.floor(timer*1.25);
+                avrScore = (avrScore+score)/2;
+                
+                socket.broadcast.emit('foundWord', {'id': socket.id, 'score': score});
                 users[socket.id].found = true;
+                users[socket.id].score += score;
+                
                 found++;
                 
                 if(found >= numUsers-1) timer = 0;
