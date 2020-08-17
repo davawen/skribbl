@@ -289,6 +289,13 @@ function setup()
 			users[data.id].score += data.score;
 		}
 	);
+	
+	socket.on('wordWas',
+		function()
+		{
+			message[message.length] = {'name': "Le mot était", 'msg': " "+word+" !"}
+		}
+	);
 	//#endregion Networking
 }
 

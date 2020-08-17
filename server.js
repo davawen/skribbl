@@ -138,6 +138,8 @@ var countDown = setInterval(
                 active++;
                 if(active >= numUsers) active = 0;
                 
+                io.emit('wordWas');
+                
                 sendGlobalData('users');
                 sendGlobalData('active');
                 sendGlobalData('drawing');
