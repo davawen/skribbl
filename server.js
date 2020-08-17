@@ -49,10 +49,6 @@ function handleRequest(req, res) {
 var words = fs.readFileSync('public/words.txt', 'utf-8').split("\n");
 
 var word = words[Math.floor(Math.random()*words.length)];
-<<<<<<< HEAD
-//var letters = {};
-=======
->>>>>>> parent of 46954dd... Added word guess
 
 let users = {};
 let numUsers = 0;
@@ -101,33 +97,10 @@ var countDown = setInterval(
         {
             timer--;
             sendGlobalData('timer');
-<<<<<<< HEAD
-            
-            /*if(timer % 20 == 0)
-            {
-                var number;
-                
-                do{
-                    number = Math.floor(Math.random() * (word.length-1))
-                }
-                while(word.charAt(number) == "" && letters[number])
-                
-                letters[number] = number;
-                io.emit('letters', letters);
-            }*/
-            
-=======
->>>>>>> parent of 46954dd... Added word guess
             if(timer <= 0)
             {
                 drawing.length = 0;
-<<<<<<< HEAD
-                
-                /*delete letters;
-                letters = {}; */
-=======
                 timer = 80;            
->>>>>>> parent of 46954dd... Added word guess
                 
                 word = words[Math.floor(Math.random()*words.length)];
                 
