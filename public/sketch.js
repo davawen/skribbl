@@ -146,7 +146,7 @@ function idToColor(id)
 			c = color('#550069');
 			break;
 	}
-	return c;
+	return colorToRGB(c);
 }
 
 function col(red, green, blue)
@@ -285,6 +285,9 @@ function setup()
 
 function draw()
 {
+	
+	console.log(currentColor);
+	
 	background(36, 81, 149);
 	
 	var w = 1600 / pattern.width;
@@ -319,6 +322,7 @@ function draw()
 	fill(255);
 	rect(1170, 70, 385, 690); //Chat
 	
+	fill(0)
 	if(word != undefined)
 	{
 		if(active)
@@ -470,7 +474,7 @@ function mouseDragged()
 		hue = floor((mouseX-560)/8)*8;
 		
 		colorMode(HSB, 255);
-		currentColor = col(hue*1.275, 255, value*4.72);
+		currentColor = col(round(hue*1.275), 255, round(value*4.72));
 		colorMode(RGB, 255);
 	}
 	else if(mouseX >= 780 && mouseX <= 860 && mouseY >= 770 && mouseY <= 824)
@@ -478,7 +482,7 @@ function mouseDragged()
 		value = floor((mouseY-770)/8)*8;
 		
 		colorMode(HSB, 255);
-		currentColor = col(hue*1.275, 255, value*4.72);
+		currentColor = col(round(hue*1.275), 255, round(value*4.72));
 		colorMode(RGB, 255);
 	}
 	else if(inCanvas() && active)
