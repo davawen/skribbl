@@ -64,7 +64,7 @@ function inCanvas()
 }
 
 
-//deutéranopie
+//#region Drawing
 
 function colorButton(x, y, w, h, id)
 {
@@ -81,7 +81,7 @@ function colorButton(x, y, w, h, id)
 	{
 		if(mouseX >= x && mouseX <= x+w && mouseY >= y && mouseY <= y+h)
 		{
-			currentColor = colorToRGB(idToColor(id));
+			currentColor = idToColor(id);
 		}
 	}
 }
@@ -149,6 +149,11 @@ function idToColor(id)
 	return c;
 }
 
+function col(red, green, blue)
+{
+	return 'rgb(' + red + ',' + green + ',' + blue + ')';
+}
+
 function colorToRGB(col)
 {
 	return 'rgb(' + red(col) + ', ' + green(col) + ', ' + blue(col) + ')';
@@ -177,6 +182,8 @@ function sizeButton(x, y, w, h, s)
 	
 	pop();
 }
+
+//#endregion
 
 //#endregion
 
@@ -283,8 +290,6 @@ function draw()
 	var w = 1600 / pattern.width;
 	var h = 900 / pattern.height;
 	
-	//console.log(w + " " + h);
-	
 	for(i = 0; i < w; i++)
 	{
 		for(j = 0; j < h; j++)
@@ -292,6 +297,8 @@ function draw()
 			image(pattern, pattern.width*i, pattern.height*j);
 		}
 	}
+	
+	//#region UI
 	
 	noStroke();
 	fill(255);
@@ -305,6 +312,12 @@ function draw()
 	textAlign(CENTER, CENTER);
 	textSize(24);
 	text(timer || 0, 37, 30);
+	
+	fill(bg);
+	rect(240, 70, 920, 690); //Sketch
+	
+	fill(255);
+	rect(1170, 70, 385, 690); //Chat
 	
 	if(word != undefined)
 	{
@@ -324,11 +337,7 @@ function draw()
 		}
 	}
 	
-	fill(bg);
-	rect(240, 70, 920, 690); //Sketch
-	
-	fill(255);
-	rect(1170, 70, 385, 690); //Chat
+	//#endregion
 	
 	textSize(16);
 	
@@ -461,7 +470,7 @@ function mouseDragged()
 		hue = floor((mouseX-560)/8)*8;
 		
 		colorMode(HSB, 255);
-		currentColor = color(hue*1.275, 255, value*4.72);
+		currentColor = col(hue*1.275, 255, value*4.72);
 		colorMode(RGB, 255);
 	}
 	else if(mouseX >= 780 && mouseX <= 860 && mouseY >= 770 && mouseY <= 824)
@@ -469,7 +478,7 @@ function mouseDragged()
 		value = floor((mouseY-770)/8)*8;
 		
 		colorMode(HSB, 255);
-		currentColor = color(hue*1.275, 255, value*4.72);
+		currentColor = col(hue*1.275, 255, value*4.72);
 		colorMode(RGB, 255);
 	}
 	else if(inCanvas() && active)
@@ -529,6 +538,6 @@ function keyPressed()
 	else if(keyCode == 66 && active)
 	{
 		bg = currentColor;
-		socket.emit('bg', colorToRGB(bg));
+		socket.emit('bg', bg);
 	}
 }
