@@ -13,7 +13,10 @@ let hue = 126;
 let value = 22;
 
 let word;
+<<<<<<< HEAD
 //let letters = {};
+=======
+>>>>>>> parent of 46954dd... Added word guess
 
 let message = [];
 
@@ -182,6 +185,7 @@ function sizeButton(x, y, w, h, s)
 //#endregion
 
 
+
 function setup()
 {
 	createCanvas(1600, 900);
@@ -253,7 +257,10 @@ function setup()
 					break;
 				case 'word':
 					word = data.data;
+<<<<<<< HEAD
 					//letters = data.data.letters;
+=======
+>>>>>>> parent of 46954dd... Added word guess
 					break;
 			}
 		}
@@ -274,6 +281,7 @@ function setup()
 			users[data.id].score += data.score;
 		}
 	);
+<<<<<<< HEAD
 	
 	/*socket.on('letters',
 		function(data)
@@ -281,6 +289,8 @@ function setup()
 			letters = data;
 		}
 	);*/
+=======
+>>>>>>> parent of 46954dd... Added word guess
 	//#endregion Networking
 }
 
@@ -325,9 +335,13 @@ function draw()
 			var w = textWidth("_")+3;
 			for(i = 0; i < word.length; i++)
 			{
+<<<<<<< HEAD
 				var str;
 				//if(letters[i]) str = word.charAt(i);
 				str = word.charAt(i) == " " ? " " : "_";
+=======
+				var str = word.charAt(i) == " " ? " " : "_";
+>>>>>>> parent of 46954dd... Added word guess
 				
 				text(str, 800 + i*w, 30);
 			}
