@@ -13,7 +13,7 @@ let hue = 126;
 let value = 22;
 
 let word;
-let letters = {};
+//let letters = {};
 
 let message = [];
 
@@ -252,8 +252,8 @@ function setup()
 					timer = data.data;
 					break;
 				case 'word':
-					word = data.data.word;
-					letters = data.data.letters;
+					word = data.data;
+					//letters = data.data.letters;
 					break;
 			}
 		}
@@ -275,12 +275,12 @@ function setup()
 		}
 	);
 	
-	socket.on('letters',
+	/*socket.on('letters',
 		function(data)
 		{
 			letters = data;
 		}
-	);
+	);*/
 	//#endregion Networking
 }
 
@@ -326,8 +326,8 @@ function draw()
 			for(i = 0; i < word.length; i++)
 			{
 				var str;
-				if(letters[i]) str = word.charAt(i);
-				else str = word.charAt(i) == " " ? " " : "_";
+				//if(letters[i]) str = word.charAt(i);
+				str = word.charAt(i) == " " ? " " : "_";
 				
 				text(str, 800 + i*w, 30);
 			}

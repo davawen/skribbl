@@ -49,7 +49,7 @@ function handleRequest(req, res) {
 var words = fs.readFileSync('public/words.txt', 'utf-8').split("\n");
 
 var word = words[Math.floor(Math.random()*words.length)];
-var letters = {};
+//var letters = {};
 
 let users = {};
 let numUsers = 0;
@@ -84,7 +84,7 @@ function sendGlobalData(type)
             data = timer;
             break;
         case 'word':
-            data = {'word': word, 'letters': letters};
+            data = word;
             break;
     }
     
@@ -99,7 +99,7 @@ var countDown = setInterval(
             timer--;
             sendGlobalData('timer');
             
-            if(timer % 20 == 0)
+            /*if(timer % 20 == 0)
             {
                 var number;
                 
@@ -110,7 +110,7 @@ var countDown = setInterval(
                 
                 letters[number] = number;
                 io.emit('letters', letters);
-            }
+            }*/
             
             if(timer <= 0)
             {
@@ -118,8 +118,8 @@ var countDown = setInterval(
                 
                 drawing.length = 0;
                 
-                delete letters;
-                letters = {}; 
+                /*delete letters;
+                letters = {}; */
                 
                 word = words[Math.floor(Math.random()*words.length)];
                 
