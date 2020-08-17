@@ -13,6 +13,7 @@ let hue = 126;
 let value = 22;
 
 let word;
+let letters = {};
 
 let message = [];
 
@@ -156,7 +157,7 @@ function col(red, green, blue)
 
 function colorToRGB(col)
 {
-	return 'rgb(' + red(col) + ', ' + green(col) + ', ' + blue(col) + ')';
+	return 'rgb(' + round(red(col)) + ', ' + round(green(col)) + ', ' + round(blue(col)) + ')';
 }
 
 function sizeButton(x, y, w, h, s)
@@ -259,7 +260,8 @@ function setup()
 					timer = data.data;
 					break;
 				case 'word':
-					word = data.data;
+					word = data.data.word;
+					letters = data.data.letters;
 					break;
 			}
 		}
@@ -269,6 +271,13 @@ function setup()
 		function(data)
 		{
 			message[message.length] = {'name': data.name, 'msg': ": "+data.msg};
+		}
+	);
+	
+	socket.on('letters',
+		function(data)
+		{
+			letters[data] = word.charAt(data);
 		}
 	);
 	
@@ -332,9 +341,12 @@ function draw()
 		else
 		{
 			var w = textWidth("_")+3;
+			var str;
+			
 			for(i = 0; i < word.length; i++)
 			{
-				var str = word.charAt(i) == " " ? " " : "_";
+				if(letters[i]) str = letters[i];
+				else str = word.charAt(i) == " " ? " " : "_";
 				
 				text(str, 800 + i*w, 30);
 			}
@@ -425,15 +437,15 @@ function draw()
 	}
 	
 	colorMode(HSB, 255);
-	for(i = 0; i < 200; i += 8)
+	for(i = 0; i < 200; i += 4)
 	{
 		fill(i*1.275, 255, value*4.72);
-		rect(560 + i, 770, 8, 54);
+		rect(560 + i, 770, 4, 54);
 	}
-	for(i = 0; i < 54; i += 8)
+	for(i = 0; i < 54; i += 4)
 	{
 		fill(hue*1.275, 255, i*4.72);
-		rect(770, 770 + i, 60, 8);
+		rect(770, 770 + i, 60, 4);
 	}
 	
 	colorMode(RGB, 255);
@@ -471,18 +483,18 @@ function mouseDragged()
 {
 	if(mouseX >= 560 && mouseX <= 760 && mouseY >= 770 && mouseY <= 824)
 	{
-		hue = floor((mouseX-560)/8)*8;
+		hue = mouseX-560;
 		
 		colorMode(HSB, 255);
-		currentColor = col(round(hue*1.275), 255, round(value*4.72));
+		currentColor = colorToRGB(color(hue*1.275, 255, value*4.72));
 		colorMode(RGB, 255);
 	}
 	else if(mouseX >= 780 && mouseX <= 860 && mouseY >= 770 && mouseY <= 824)
 	{
-		value = floor((mouseY-770)/8)*8;
+		value = mouseY-770;
 		
 		colorMode(HSB, 255);
-		currentColor = col(round(hue*1.275), 255, round(value*4.72));
+		currentColor = colorToRGB(color(hue*1.275, 255, value*4.72));
 		colorMode(RGB, 255);
 	}
 	else if(inCanvas() && active)
