@@ -398,12 +398,16 @@ function draw()
 		var str = message[i].name;
 		
 		textFont(montserratBold);
-		text(str, 1180, 80 + i*20);
+		text(str, 1180, 75 + i*20);
 		
 		var width = textWidth(str);
 		
 		textFont(montserrat);
-		text(message[i].msg, 1180 + width, 80 + i*20);
+		text(message[i].msg, 1180 + width, 75 + i*20);
+	}
+	if(message.length > 33)
+	{
+		message.shift();
 	}
 	
 	for(i = 0; i < drawing.length; i++)
