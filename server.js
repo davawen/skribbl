@@ -165,14 +165,20 @@ io.sockets.on('connection',
         socket.on('sendName', 
             function(data)
             {
-                users[socket.id] = {name: data, found: false, score: 0};
+                if(!users[socket.id])
+                {
+                    users[socket.id] = {name: data, found: false, score: 0};
+
+                    sendGlobalData('drawing');
+                    sendGlobalData('timer');
+                    sendGlobalData('active');
+                    sendGlobalData('word');
+                }
+                else
+                    users[socket.id].name = data;
                 
-                //console.log(users);
+                
                 sendGlobalData('users');
-                sendGlobalData('drawing');
-                sendGlobalData('timer');
-                sendGlobalData('active');
-                sendGlobalData('word');
             }
         )
         
